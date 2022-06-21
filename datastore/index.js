@@ -39,7 +39,7 @@ exports.readAll = (callback) => {
             if (err) {
               reject(err);
             } else {
-              resolve({id: file.split('.')[0], text: file.split('.')[0]});
+              resolve({id: file.split('.')[0], text: fileData});
             }
           });
         });
