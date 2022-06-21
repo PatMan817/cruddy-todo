@@ -17,22 +17,38 @@ exports.create = (text, callback) => {
           throw ('error writing text');
           return;
         } else {
-          //console.log(fs.readFileSync(`${exports.dataDir}/${id}.txt`, 'utf8'));
-          //console.log('file created!');
           callback(null, { id, text });
         }
       });
     }
   });
-  //items[id] = text;
-  //console.log('todo:-------', text, 'id: ------------', id);
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  fs.readdir(exports.dataDir, (err, files) => {
+    if (err) {
+      throw ('error get files');
+    } else {
+      if (files.length === 0) {
+        callback(null, []);
+        return;
+      }
+      files = files.map(file => {
+        return new Promise((resolve, reject) => {
+          fs.readFile(`${exports.dataDir}/${file}`, 'utf8', (err, fileData) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve({id: file.split('.')[0], text: file.split('.')[0]});
+            }
+          });
+        });
+      });
+      Promise.all(files)
+        .then(values => callback(null, values))
+        .catch(err => console.error(err));
+    }
   });
-  callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
